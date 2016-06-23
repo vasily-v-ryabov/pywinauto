@@ -282,55 +282,6 @@ class HwndWrapperTests(unittest.TestCase):
         expected = 0x89 # 0x2000 + 0x40
         self.assertEqual(expected, code)
 
-    def test_send_chars_simple(self):
-        testString = "Hello World"
-
-        self.dlg.Minimize()
-        self.dlg.Edit.send_chars(testString)
-
-        actual = self.dlg.Edit.Texts()[0]
-        expected = "Hello World"
-        self.assertEqual(expected, actual)
-
-    # def test_send_chars_enter(self):
-    #     with self.assertRaises(findbestmatch.MatchError):
-    #         testString = "{ENTER}"
-    #
-    #         self.dlg.Minimize()
-    #         self.dlg.Edit.send_chars(testString)
-    #
-    #         actual = self.dlg.Edit.Texts()[0]
-
-    def test_send_chars_virtual_keys_left_del_back(self):
-        testString = "Hello123{LEFT 2}{DEL 2}{BACKSPACE} World"
-
-        self.dlg.Minimize()
-        self.dlg.Edit.send_chars(testString)
-
-        actual = self.dlg.Edit.Texts()[0]
-        expected = "Hello World"
-        self.assertEqual(expected, actual)
-
-    def test_send_chars_virtual_keys_shift(self):
-        testString = "+hello +world"
-
-        self.dlg.Minimize()
-        self.dlg.Edit.send_chars(testString)
-
-        actual = self.dlg.Edit.Texts()[0]
-        expected = "Hello World"
-        self.assertEqual(expected, actual)
-
-    # def test_send_chars_virtual_keys_ctrl(self):
-    #     testString = "^a^c{RIGHT}^v"
-    #
-    #     self.dlg.Minimize()
-    #     self.dlg.Edit.send_chars(testString)
-    #
-    #     actual = self.dlg.Edit.Texts()[0]
-    #     expected = "and the note goes here ...and the note goes here ..."
-    #     self.assertEqual(expected, actual)
-
     def testSendMessageTimeout(self):
         default_timeout = Timings.sendmessagetimeout_timeout
         Timings.sendmessagetimeout_timeout = 0.1
@@ -836,6 +787,85 @@ class RemoteMemoryBlockTests(unittest.TestCase):
         
         mem.size = 24 # test hack
         self.assertRaises(Exception, mem.Write, buf)
+
+
+class NotepadSendCharsTestsRestored(unittest.TestCase):
+
+    """Test send_char() method with Notepad"""
+
+    def setUp(self):
+        """Set some data and ensure the application is in the state we want"""
+        Timings.Fast()
+
+        self.app = Application()
+        self.app.start(_notepad_exe())
+
+        self.dlg = self.app.Window_(title='Untitled - Notepad', class_name='Notepad')
+        self.ctrl = HwndWrapper(self.dlg.Edit.handle)
+
+    def tearDown(self):
+        """Close the application after tests"""
+        try:
+            self.dlg.Close(0.5)
+            if self.app.Notepad["Do&n't Save"].Exists():
+                self.app.Notepad["Do&n't Save"].Click()
+                self.app.Notepad["Do&n't Save"].WaitNot('visible')
+        except Exception: # TimeoutError:
+            pass
+        finally:
+            self.app.kill_()
+
+    def test_send_chars_simple(self):
+        #for window_state in [self.dlg.Minimize, self.dlg.Restore]:
+        #    window_state()
+        self.dlg.Edit.send_chars("Hello{ENTER}{TAB}World!")
+        self.assertEqual(self.dlg.Edit.TextBlock(), "Hello\r\n\tWorld!")
+
+    def test_send_chars_shifted(self):
+        #for window_state in [self.dlg.Minimize, self.dlg.Restore]:
+        #    window_state()
+        self.dlg.Edit.send_chars("+hello{ENTER}{TAB}+world!")
+        self.assertEqual(self.dlg.Edit.TextBlock(), "Hello\r\n\tWorld!")
+
+    def test_send_chars_alt_pressed(self):
+        #for window_state in [self.dlg.Restore]: # self.dlg.Minimize
+        #    # TODO: it doesn't work for minimized Notepad window
+        #    # it might be a Notepad-specific issue, need to clarify
+        #    window_state()
+        self.ctrl.send_chars("%ha") # Alt+H, A
+        About = self.app.window_(title = "About Notepad")
+        About.Wait('ready')
+        About.OK.click()
+        About.WaitNot('visible')
+
+    def test_send_chars_virtual_keys_left_del_back(self):
+        #for window_state in [self.dlg.Minimize, self.dlg.Restore]:
+        #    window_state()
+        self.dlg.Edit.send_chars("Hello123{LEFT 2}{DEL 2}{BACKSPACE} World")
+        self.assertEqual(self.dlg.Edit.TextBlock(), "Hello World")
+        self.dlg.Edit.send_chars("^{LEFT}^+{RIGHT}{DEL}")
+        self.assertEqual(self.dlg.Edit.TextBlock(), "World")
+
+    # def test_send_chars_virtual_keys_ctrl(self):
+    #     testString = "^a^c{RIGHT}^v"
+    #
+    #     self.dlg.Minimize()
+    #     self.dlg.Edit.send_chars(testString)
+    #
+    #     actual = self.dlg.Edit.Texts()[0]
+    #     expected = "and the note goes here ...and the note goes here ..."
+    #     self.assertEqual(expected, actual)
+
+
+class NotepadSendCharsTestsMinimized(NotepadSendCharsTestsRestored):
+
+    """Test send_char() method with minimized Notepad window"""
+
+    def setUp(self):
+        """Set some data and ensure the application is in the state we want"""
+        NotepadSendCharsTestsRestored.setUp(self)
+        self.dlg.Minimize()
+
 
 
 if __name__ == "__main__":

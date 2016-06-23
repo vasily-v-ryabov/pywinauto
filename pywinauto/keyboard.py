@@ -45,6 +45,7 @@ DEBUG = 0
 
 GetMessageExtraInfo = ctypes.windll.user32.GetMessageExtraInfo
 MapVirtualKey = ctypes.windll.user32.MapVirtualKeyW
+MapVirtualKeyA = ctypes.windll.user32.MapVirtualKeyA
 SendInput = ctypes.windll.user32.SendInput
 UINT = ctypes.c_uint
 SendInput.restype = UINT
@@ -384,7 +385,8 @@ class EscapedKeyAction(KeyAction):
     def _get_key_info(self):
         """EscapedKeyAction doesn't send it as Unicode and the vk and 
         scan code are generated differently"""
-        vkey_scan = LoByte(VkKeyScan(self.key))
+        vkey_scan_short = VkKeyScan(self.key)
+        vkey_scan = LoByte(vkey_scan_short)
 
         return (vkey_scan, MapVirtualKey(vkey_scan, 0), 0)
 

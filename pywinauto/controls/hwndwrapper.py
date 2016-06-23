@@ -473,8 +473,77 @@ class HwndWrapper(BaseWrapper):
         Parses modifiers Shift(+), Control(^), Menu(%) and Sequences like "{TAB}", "{Enter}"
         For more information about Sequences and Modifiers navigate to keyboard.py
         """
+        
+        # list of scan codes with Ctrl modifier
+        # http://stanislavs.org/helppc/scan_codes.html
+        ctrl_modified_keys = {
+            'a': 0x1E01,
+            'b': 0x3002,
+            'c': 0x2E03,
+            'd': 0x2004,
+            'e': 0x1205,
+            'f': 0x2106,
+            'g': 0x2207,
+            'h': 0x2308,
+            'i': 0x1709,
+            'j': 0x240A,
+            'k': 0x250B,
+            'l': 0x260C,
+            'm': 0x320D,
+            'n': 0x310E,
+            'o': 0x180F,
+            'p': 0x1910,
+            'q': 0x1011,
+            'r': 0x1312,
+            's': 0x1F13,
+            't': 0x1414,
+            'u': 0x1615,
+            'v': 0x2F16,
+            'w': 0x1117,
+            'x': 0x2D18,
+            'y': 0x1519,
+            'z': 0x2C1A,
+            '2': 0x0300,
+            '6': 0x071E,
+            '-': 0x0C1F,
+            '[': 0x1A1B,
+            ']': 0x1B1D,
+            '\\': 0x2B1C,
+            'F1': 0x5E00,
+            'F2': 0x5F00,
+            'F3': 0x6000,
+            'F4': 0x6100,
+            'F5': 0x6200,
+            'F6': 0x6300,
+            'F7': 0x6400,
+            'F8': 0x6500,
+            'F9': 0x6600,
+            'F10': 0x6700,
+            'F11': 0x8900,
+            'F12': 0x8A00,
+            'BackSpace': 0x0E7F,
+            'Del': 0x9300,
+            'Down Arrow': 0x9100,
+            'End': 0x7500,
+            'Enter': 0x1C0A,
+            'Esc': 0x011B,
+            'Home': 0x7700,
+            'Ins': 0x9200,
+            'Left Arrow': 0x7300,
+            'PgDn': 0x7600,
+            'PgUp': 0x8400,
+            'PrtSc': 0x7200,
+            'Right Arrow': 0x7400,
+            'SpaceBar': 0x3920,
+            'Tab': 0x9400,
+            'Up Arrow': 0x8D00,
+        }
 
         keys = keyboard.parse_keys(message, with_spaces, with_tabs, with_newlines)
+        ctrl_pressed = False
+        alt_pressed = False
+        wm_keydown = win32con.WM_KEYDOWN
+        wm_keyup = win32con.WM_KEYUP
         for key in keys:
 
             vk, scan, flags = key.get_key_info()
@@ -488,27 +557,64 @@ class HwndWrapper(BaseWrapper):
                     win32api.SendMessage(self.handle, win32con.WM_CHAR, vk, lparam)
                 elif key.down and key.up and (flags == 1):
                     # + LEFT, DELETE
-                    lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 0 << 31
-                    win32api.SendMessage(self.handle, win32con.WM_KEYDOWN, vk, lparam)
+                    lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 0 << 30 | 0 << 31
+                    win32api.PostMessage(self.handle, wm_keydown, vk, lparam)
                     lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 1 << 30 | 1 << 31
-                    win32api.SendMessage(self.handle, win32con.WM_KEYUP, vk, lparam)
+                    win32api.PostMessage(self.handle, wm_keyup, vk, lparam)
                 elif key.down:
                     # TODO: {CTRL} (^) modifier doesn't work
                     # + SHIFT down
                     # - CTRL down
-                    # print('key', key, 'down')
-                    lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 0 << 31
-                    win32api.SendMessage(self.handle, win32con.WM_KEYDOWN, vk, lparam)
+                    if vk in [keyboard.VK_CONTROL, keyboard.VK_MENU]:
+                        if vk == keyboard.VK_CONTROL:
+                            ctrl_pressed = True
+                        if vk == keyboard.VK_MENU:
+                            alt_pressed = True
+                    
+                        # attach thread input
+                        control_thread = win32process.GetWindowThreadProcessId(self.handle)[0]
+                        res = win32process.AttachThreadInput(win32api.GetCurrentThreadId(), control_thread, 1)
+                        
+                        # set Ctrl/Alt/Shift keyboard state
+                        key_states = (ctypes.c_ubyte * 256) ()
+                        key_states[vk] |= 128
+                        win32functions.SetKeyboardState(ctypes.byref(key_states))
+                    else:
+                        lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 0 << 30 | 0 << 31
+                        win32api.SendMessage(self.handle, wm_keydown, vk, lparam)
                 elif key.up:
                     # + SHIFT up
                     # - CTRL up
-                    # print('key', key, 'up')
-                    lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 1 << 30 | 1 << 31
-                    win32api.SendMessage(self.handle, win32con.WM_KEYUP, vk, lparam)
+                    if vk in [keyboard.VK_CONTROL, keyboard.VK_MENU]:
+                        key_states = (ctypes.c_ubyte * 256) ()
+                        win32functions.SetKeyboardState(ctypes.byref(key_states))
+                        
+                        # detach thread input
+                        control_thread = win32process.GetWindowThreadProcessId(self.handle)[0]
+                        win32process.AttachThreadInput(win32api.GetCurrentThreadId(), control_thread, 0)
+                        if vk == keyboard.VK_CONTROL:
+                            ctrl_pressed = False
+                        if vk == keyboard.VK_MENU:
+                            alt_pressed = False
+                    else:
+                        lparam = 1 << 0 | scan << 16 | flags << 24 | 0 << 29 | 1 << 30 | 1 << 31
+                        win32api.SendMessage(self.handle, wm_keyup, vk, lparam)
             elif isinstance(key, keyboard.EscapedKeyAction):
-                # An escaped key action e.g. F9 DOWN, etc
-                # And key between Shifts. a -> A
-                win32api.SendMessage(self.handle, win32con.WM_CHAR, vk, lparam)
+                
+                if ctrl_pressed:
+                    alt_scan = ctrl_modified_keys[key.key]
+                    
+                    lparam = 1 << 0 | alt_scan << 16 | 0 << 24 | 0 << 29 | 0 << 30 | 0 << 31
+                    win32api.PostMessage(self.handle, wm_keydown, vk, lparam)
+                    lparam = 1 << 0 | alt_scan << 16 | 0 << 24 | 0 << 29 | 1 << 30 | 1 << 31
+                    win32api.PostMessage(self.handle, wm_keyup, vk, lparam)
+                elif alt_pressed:
+                    lparam = 1 << 0 | scan << 16 | 0 << 24 | 0 << 29 | 0 << 30 | 0 << 31
+                    win32api.PostMessage(self.handle, wm_keydown, vk, lparam)
+                    lparam = 1 << 0 | scan << 16 | 0 << 24 | 0 << 29 | 1 << 30 | 1 << 31
+                    win32api.PostMessage(self.handle, wm_keyup, vk, lparam)
+                else:
+                    win32api.SendMessage(self.handle, win32con.WM_CHAR, vk, lparam)
             else:
                 # Usual key
                 win32api.SendMessage(self.handle, win32con.WM_CHAR, scan, lparam)

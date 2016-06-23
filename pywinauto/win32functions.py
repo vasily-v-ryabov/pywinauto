@@ -21,6 +21,7 @@
 """Defines Windows(tm) functions"""
 
 import ctypes
+from ctypes import wintypes
 from . import win32defines, win32structures
 from .actionlogger import ActionLogger
 from ctypes import c_uint, c_short, c_long
@@ -106,12 +107,12 @@ ClientToScreen      =   ctypes.windll.user32.ClientToScreen
 ScreenToClient      =   ctypes.windll.user32.ScreenToClient
 
 GetCurrentThreadId  =   ctypes.windll.Kernel32.GetCurrentThreadId
-GetWindowThreadProcessId =  ctypes.windll.user32.GetWindowThreadProcessId
+GetWindowThreadProcessId = ctypes.windll.user32.GetWindowThreadProcessId
+#GetWindowThreadProcessId.argtypes = [wintypes.HWND, ]
 GetGUIThreadInfo    =   ctypes.windll.user32.GetGUIThreadInfo
 AttachThreadInput   =   ctypes.windll.user32.AttachThreadInput
 AttachThreadInput.restype = win32structures.BOOL
 AttachThreadInput.argtypes = [win32structures.DWORD, win32structures.DWORD, win32structures.BOOL]
-#GetWindowThreadProcessId    =   ctypes.windll.user32.GetWindowThreadProcessId
 GetLastError = ctypes.windll.kernel32.GetLastError
 
 OpenProcess			=	ctypes.windll.kernel32.OpenProcess
@@ -227,6 +228,10 @@ elif SetProcessDPIAware:
 GetQueueStatus = ctypes.windll.user32.GetQueueStatus
 
 LoadString = ctypes.windll.user32.LoadStringW
+
+SetKeyboardState = ctypes.windll.user32.SetKeyboardState
+#SetKeyboardState.argtypes = [ctypes.POINTER(wintypes.BYTE)]
+SetKeyboardState.restype = wintypes.BOOL
 
 
 #def VkKeyScanW(p1):
