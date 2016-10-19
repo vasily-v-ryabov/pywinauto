@@ -628,7 +628,13 @@ class TreeViewAdditionalTestCases(unittest.TestCase):
         self.dlg.set_focus()
         self.dlg.TVS_CHECKBOXES.check_by_click()
         birds = self.ctrl.GetItem(r'\Birds')
-        birds.Click(where='check')
+        try:
+            birds.Click(where='check')
+        except Exception:
+            # try again
+            self.dlg.TVS_CHECKBOXES.uncheck_by_click_input()
+            self.dlg.TVS_CHECKBOXES.check_by_click_input()
+            birds.Click(where='check')
         self.assertEquals (birds.IsChecked(), True)
         birds.click_input(where='check')
         self.assertEquals (birds.IsChecked(), False)
