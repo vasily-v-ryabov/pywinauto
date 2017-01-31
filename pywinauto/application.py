@@ -69,14 +69,14 @@ import os.path
 import pickle
 import time
 import warnings
+import multiprocessing
+import locale
 
 import win32process
 import win32api
 import win32gui
 import win32con
 import win32event
-import multiprocessing
-
 
 from . import controls
 from . import findbestmatch
@@ -261,6 +261,10 @@ class WindowSpecification(object):
         if 'top_level_only' not in criteria:
             criteria['top_level_only'] = False
 
+        if self.backend.name == 'win32' and 'visible_only' not in criteria.keys():
+            # for backward compatibility with 0.5.x
+            criteria['visible_only'] = True
+
         new_item = WindowSpecification(self.criteria[0])
         new_item.criteria.extend(self.criteria[1:])
         new_item.criteria.append(criteria)
@@ -308,6 +312,9 @@ class WindowSpecification(object):
 
         # if we get here then we must have only had one criteria so far
         # so create a new :class:`WindowSpecification` for this control
+        if self.backend.name == 'win32' and 'visible_only' not in self.criteria[0].keys():
+            # for backward compatibility with 0.5.x
+            self.criteria[0]['visible_only'] = True
         new_item = WindowSpecification(self.criteria[0])
 
         # add our new criteria
@@ -622,10 +629,10 @@ class WindowSpecification(object):
                 if auto_id:
                     criteria_texts.append(u'auto_id="{}"'.format(auto_id))
                 if control_type:
-                    criteria_texts.append('control_type="{}"'.format(control_type))
+                    criteria_texts.append(u'control_type="{}"'.format(control_type))
                 if title or class_name or auto_id:
                     output += indent + u'child_window(' + u', '.join(criteria_texts) + u')'
-                print(output)
+                print(output.encode(locale.getpreferredencoding()))
 
                 print_identifiers(ctrl.children(), current_depth + 1)
 
@@ -1055,6 +1062,8 @@ class Application(object):
 
         criteria = {}
         criteria['backend'] = self.backend.name
+        if self.backend.name == 'win32':
+            criteria['visible_only'] = True
         if windows[0].handle:
             criteria['handle'] = windows[0].handle
         else:
@@ -1121,6 +1130,9 @@ class Application(object):
         if 'backend' in kwargs:
             raise ValueError('Using another backend than set in the app constructor is not allowed!')
         kwargs['backend'] = self.backend.name
+        if self.backend.name == 'win32' and 'visible_only' not in kwargs.keys():
+            # for backward compatibility with 0.5.x
+            kwargs['visible_only'] = True
 
         if not self.process:
             raise AppNotConnected("Please use start or connect before trying "

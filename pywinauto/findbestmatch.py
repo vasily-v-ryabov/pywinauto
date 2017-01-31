@@ -400,6 +400,8 @@ class UniqueDict(dict):
 
             # make a copy of the text as we need the original later
             text = text_
+            if text is None:
+                print 'WARNING! Skip None (non-text control)'
 
             if clean:
                 text = _clean_non_chars(text)
