@@ -35,7 +35,7 @@ from __future__ import print_function
 
 # pylint:  disable-msg=W0611
 
-#import sys
+# import sys
 import time
 import re
 import ctypes
@@ -43,6 +43,7 @@ import win32api
 import win32gui
 import win32con
 import win32process
+import win32event
 import six
 
 # the wrappers may be used in an environment that does not need
@@ -65,7 +66,7 @@ from .. import win32structures
 from ..timings import Timings
 from .. import timings
 
-#from .. import findbestmatch
+# from .. import findbestmatch
 from .. import handleprops
 from ..win32_element_info import HwndElementInfo
 from .. import backend
