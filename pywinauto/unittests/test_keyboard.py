@@ -289,8 +289,7 @@ class SendKeysTests(unittest.TestCase):
             clipboard.set_data('abc')
             # check alt via opening edit menu and paste text from clipboard
             SendKeys('%(e)')
-            # wait while popup menu is ready and choose the menu item by {ENTER}
-            SendKeys('{PAUSE 0.5}{ENTER}')
+            SendKeys('{ENTER}')
             received = self.receive_text()
             self.assertEqual('abc', received)
 
