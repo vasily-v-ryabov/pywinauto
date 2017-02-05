@@ -46,7 +46,6 @@ from . import hwndwrapper
 from .. import win32functions
 from .. import win32defines
 from .. import win32structures
-from .. import controlproperties
 
 from ..timings import Timings
 

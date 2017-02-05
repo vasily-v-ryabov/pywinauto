@@ -51,25 +51,23 @@ import six
 # the following makes the import optional.
 
 from .. import win32functions
+from .. import win32defines
+from .. import win32structures
+from .. import controlproperties
 from ..actionlogger import ActionLogger
 from .. import keyboard
 from .. import mouse
+from ..timings import Timings
+from .. import timings
+from .. import handleprops
+from ..win32_element_info import HwndElementInfo
+from .. import backend
 
 # I leave this optional because PIL is a large dependency
 try:
     from PIL import ImageGrab
 except ImportError:
     ImageGrab = None
-
-from .. import win32defines
-from .. import win32structures
-from ..timings import Timings
-from .. import timings
-
-# from .. import findbestmatch
-from .. import handleprops
-from ..win32_element_info import HwndElementInfo
-from .. import backend
 
 # also import MenuItemNotEnabled so that it is
 # accessible from HwndWrapper module
