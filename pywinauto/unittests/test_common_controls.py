@@ -598,6 +598,8 @@ class TreeViewAdditionalTestCases(unittest.TestCase):
     def testCheckBoxes(self):
         """Make sure tree view item method IsChecked() works as expected"""
         self.dlg.set_focus()
+        # try checking the box twice to make the test stable
+        self.dlg.TVS_CHECKBOXES.check_by_click()
         self.dlg.TVS_CHECKBOXES.check_by_click()
         birds = self.ctrl.GetItem(r'\Birds')
         birds.Click(where='check')
@@ -1183,6 +1185,7 @@ class RebarTestCases(unittest.TestCase):
     def testAfxToolBarButtons(self):
         """Make sure we can click on Afx ToolBar button by index"""
         Timings.closeclick_dialog_close_wait = 2.
+        self.app.wait_cpu_usage_lower(threshold=0.5, timeout=10, usage_interval=0.5)
         self.dlg.StandardToolbar.Button(1).Click()
         self.app.Window_(title='Open').Wait('ready')
         self.app.Window_(title='Open').Cancel.CloseClick()
