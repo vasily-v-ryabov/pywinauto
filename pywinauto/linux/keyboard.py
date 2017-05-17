@@ -518,7 +518,7 @@ def parse_keys(string,
     return keys
 
 
-def SendKeys(keys,
+def send_keys(keys,
              pause=0.05,
              with_spaces=False,
              with_tabs=False,
@@ -529,3 +529,5 @@ def SendKeys(keys,
     for k in keys:
         k.run()
         time.sleep(pause)
+
+SendKeys = send_keys

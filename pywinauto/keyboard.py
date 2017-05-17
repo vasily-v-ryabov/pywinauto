@@ -621,7 +621,7 @@ else:
         """Return the high byte of the value"""
         return (val & 0xff00) >> 8
 
-    def SendKeys(keys,
+    def send_keys(keys,
                  pause=0.05,
                  with_spaces=False,
                  with_tabs=False,
@@ -633,3 +633,5 @@ else:
         for k in keys:
             k.run()
             time.sleep(pause)
+
+    SendKeys = send_keys
