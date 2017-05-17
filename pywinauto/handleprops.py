@@ -169,6 +169,7 @@ def is64bitprocess(process_id):
     from .sysinfo import is_x64_OS
     is32 = True
     if is_x64_OS():
+        print('is64bitprocess: process_id = {}'.format(process_id))
         phndl = win32api.OpenProcess(win32con.MAXIMUM_ALLOWED, 0, process_id)
         if phndl:
             is32 = win32process.IsWow64Process(phndl)
