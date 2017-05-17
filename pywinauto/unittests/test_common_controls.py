@@ -604,6 +604,7 @@ class TreeViewAdditionalTestCases(unittest.TestCase):
         birds = self.ctrl.GetItem(r'\Birds')
         birds.Click(where='check')
         self.assertEquals(birds.IsChecked(), True)
+        time.sleep(0.5) # to make sure it wasn't detected as double click
         birds.click_input(where='check')
         self.assertEquals(birds.IsChecked(), False)
 
