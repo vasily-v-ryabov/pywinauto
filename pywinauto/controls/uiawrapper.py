@@ -312,6 +312,13 @@ class UIAWrapper(BaseWrapper):
         return uia_defs.get_elem_interface(elem, "VirtualizedItem")
 
     # ------------------------------------------------------------
+    @lazy_property
+    def iface_legacy(self):
+        """Get the element's LegacyIAccessible interface"""
+        elem = self.element_info.element
+        return uia_defs.get_elem_interface(elem, "LegacyIAccessible")
+
+    # ------------------------------------------------------------
     @property
     def writable_props(self):
         """Extend default properties list."""
