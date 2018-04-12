@@ -531,6 +531,7 @@ class ListViewWinFormTestCases32(unittest.TestCase):
             list_view = self.dlg.child_window(auto_id="listViewEx1").wait('visible', timeout=50)
         except TimeoutError as exc:
             print('Top window text = "{}"'.format(self.app.top_window().window_text()))
+            self.dlg.print_control_identifiers()
             raise exc
         self.assertEqual(list_view.automation_id(), "listViewEx1")
 
