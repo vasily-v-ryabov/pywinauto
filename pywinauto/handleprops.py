@@ -40,6 +40,7 @@ import win32process
 import win32api
 import win32con
 import win32gui
+import six
 
 from . import win32functions
 from . import win32defines
@@ -98,7 +99,7 @@ def dotnetname(ctrl):
     """Return the .NET name of the control"""
     textval = ''
 
-    wm_gcn = win32functions.RegisterWindowMessage('WM_GETCONTROLNAME')
+    wm_gcn = win32functions.RegisterWindowMessage(six.text_type('WM_GETCONTROLNAME'))
     if wm_gcn > 0:
         length = 1024
         remote_mem = RemoteMemoryBlock(ctrl, size=length*2)
@@ -109,9 +110,6 @@ def dotnetname(ctrl):
             text = ctypes.create_unicode_buffer(length)
             remote_mem.Read(text)
             textval = text.value
-        else:
-            del remote_mem
-            raise Exception("WM_GETCONTROLNAME returned 0")
 
         del remote_mem
     else:
