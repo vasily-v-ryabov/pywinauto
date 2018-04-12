@@ -109,8 +109,13 @@ def dotnetname(ctrl):
             text = ctypes.create_unicode_buffer(length)
             remote_mem.Read(text)
             textval = text.value
+        else:
+            del remote_mem
+            raise Exception("WM_GETCONTROLNAME returned 0")
 
         del remote_mem
+    else:
+        raise Exception("Cannot register WM_GETCONTROLNAME")
 
     return textval
 
