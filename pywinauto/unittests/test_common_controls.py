@@ -50,7 +50,7 @@ from pywinauto import findbestmatch  # noqa: E402
 from pywinauto.sysinfo import is_x64_Python  # noqa: E402
 from pywinauto.remote_memory_block import RemoteMemoryBlock  # noqa: E402
 from pywinauto.actionlogger import ActionLogger  # noqa: E402
-from pywinauto.timings import Timings  # noqa: E402
+from pywinauto.timings import Timings, TimeoutError  # noqa: E402
 from pywinauto.timings import wait_until  # noqa: E402
 from pywinauto import mouse  # noqa: E402
 
@@ -481,11 +481,11 @@ class ListViewWinFormTestCases32(unittest.TestCase):
         """Set some data and ensure the application is in the state we want"""
         Timings.Defaults()
 
-        app = Application()
-        app.start(self.path)
+        self.app = Application()
+        self.app.start(self.path)
 
-        self.dlg = app.ListViewEx
-        self.ctrl = app.ListViewEx.ListView.wrapper_object()
+        self.dlg = self.app.ListViewEx_Demo
+        self.ctrl = self.app.ListViewEx_Demo.ListView.wrapper_object()
 
     def tearDown(self):
         """Close the application after tests"""
@@ -527,7 +527,11 @@ class ListViewWinFormTestCases32(unittest.TestCase):
         self.assertTrue('In-place-edit control "Edit"' in str(context.exception))
 
     def test_automation_id_by_win32(self):
-        list_view = self.dlg.child_window(auto_id="listViewEx1").wait('visible', timeout=50)
+        try:
+            list_view = self.dlg.child_window(auto_id="listViewEx1").wait('visible', timeout=50)
+        except TimeoutError as exc:
+            print('Top window text = "{}"'.format(self.app.top_window().window_text()))
+            raise exc
         self.assertEqual(list_view.automation_id(), "listViewEx1")
 
         check_box = self.dlg.child_window(auto_id="checkBoxDoubleClickActivation").wait('visible', timeout=50)
