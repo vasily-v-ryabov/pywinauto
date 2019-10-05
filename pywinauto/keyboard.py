@@ -126,10 +126,6 @@ else:
     GetMessageExtraInfo = ctypes.windll.user32.GetMessageExtraInfo
     MapVirtualKey = ctypes.windll.user32.MapVirtualKeyW
 
-    VkKeyScan = ctypes.windll.user32.VkKeyScanW
-    VkKeyScan.restype = ctypes.c_short
-    VkKeyScan.argtypes = [ctypes.c_wchar]
-
     INPUT_KEYBOARD = 1
     KEYEVENTF_EXTENDEDKEY = 1
     KEYEVENTF_KEYUP = 2
@@ -467,7 +463,7 @@ else:
 
             The vk and scan code are generated differently.
             """
-            vkey_scan = LoByte(VkKeyScan(self.key))
+            vkey_scan = LoByte(win32functions.VkKeyScan(self.key))
 
             return (vkey_scan, MapVirtualKey(vkey_scan, 0), 0)
 

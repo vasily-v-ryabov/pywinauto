@@ -128,11 +128,15 @@ GetStockObject.restype = wintypes.HGDIOBJ
 GetStockObject.argtypes = [
     c_int,
 ]
-GetSystemMetrics = windll.user32.GetSystemMetrics
-GetSystemMetrics.restype = c_int
-GetSystemMetrics.argtypes = [
-    c_int,
-]
+
+def GetSystemMetrics(metrics):
+    return c_int(windll.user32.GetSystemMetrics(c_int(metrics))).value
+
+# GetSystemMetrics = windll.user32.GetSystemMetrics
+# GetSystemMetrics.restype = c_int
+# GetSystemMetrics.argtypes = [
+    # c_int,
+# ]
 GetTextMetrics = windll.gdi32.GetTextMetricsW
 GetTextMetrics.restype = wintypes.BOOL
 GetTextMetrics.argtypes = [
@@ -175,22 +179,26 @@ SendInput.argtypes = [
     c_void_p,  # using POINTER(win32structures.INPUT) needs rework in keyboard.py
     c_int,
 ]
-SetCursorPos = windll.user32.SetCursorPos
-SetCursorPos.restype = wintypes.BOOL
-SetCursorPos.argtypes = [
-    c_int,
-    c_int,
-]
-GetCursorPos = windll.user32.GetCursorPos
-GetCursorPos.restype = wintypes.BOOL
-GetCursorPos.argtypes = [
-    POINTER(wintypes.POINT),
-]
-GetCaretPos = windll.user32.GetCaretPos
-GetCaretPos.restype = wintypes.BOOL
-GetCaretPos.argtypes = [
-    POINTER(wintypes.POINT),
-]
+
+def SetCursorPos(x, y):
+    return wintypes.BOOL(c_int(x), c_int(y)).value
+
+# SetCursorPos = windll.user32.SetCursorPos
+# SetCursorPos.restype = wintypes.BOOL
+# SetCursorPos.argtypes = [
+    # c_int,
+    # c_int,
+# ]
+# GetCursorPos = windll.user32.GetCursorPos
+# GetCursorPos.restype = wintypes.BOOL
+# GetCursorPos.argtypes = [
+    # POINTER(wintypes.POINT),
+# ]
+# GetCaretPos = windll.user32.GetCaretPos
+# GetCaretPos.restype = wintypes.BOOL
+# GetCaretPos.argtypes = [
+    # POINTER(wintypes.POINT),
+# ]
 GetKeyboardState = windll.user32.GetKeyboardState
 GetKeyboardState.restype = wintypes.BOOL
 GetKeyboardState.argtypes = [
@@ -206,12 +214,21 @@ GetKeyboardLayout.restype = wintypes.HKL
 GetKeyboardLayout.argtypes = [
     wintypes.DWORD,
 ]
-VkKeyScanExW = windll.user32.VkKeyScanExW
-VkKeyScanExW.restype = SHORT
-VkKeyScanExW.argtypes = [
-    wintypes.WCHAR,
-    wintypes.HKL,
-]
+
+# TODO: use the same approach for all Win32 functions to reduce risk
+# that other library doesn't rely on the same argtypes
+def VkKeyScanExW(key, locale_id):
+    return SHORT(windll.user32.VkKeyScanExW(wintypes.WCHAR(key), wintypes.HKL(locale_id))).value
+
+def VkKeyScan(key):
+    return SHORT(windll.user32.VkKeyScanW(wintypes.WCHAR(key))).value
+
+# VkKeyScanExW = windll.user32.VkKeyScanExW
+# VkKeyScanExW.restype = SHORT
+# VkKeyScanExW.argtypes = [
+    # wintypes.WCHAR,
+    # wintypes.HKL,
+# ]
 # menu functions
 DrawMenuBar = windll.user32.DrawMenuBar
 DrawMenuBar.restype = wintypes.BOOL
