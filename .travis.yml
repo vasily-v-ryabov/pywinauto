@@ -8,18 +8,18 @@ language: cpp
 matrix:
   include:
     - os: osx
+      osx_image: xcode8
       env: PYVER=2.7
       language: generic
-    # - os: osx
-    #   env: PYVER=3.3
-    #   language: generic
     - os: osx
+      osx_image: xcode8
       env: PYVER=3.4
       language: generic
     - os: osx
       env: PYVER=3.5
       language: generic
     - os: osx
+      osx_image: xcode8
       env: PYVER=3.6
       language: generic
     - os: linux
@@ -44,6 +44,7 @@ before_install:
 install:
 
   # macOS dev dependencies:
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT INTO access VALUES ('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,1,1,NULL,NULL);"; fi
 
   # Install 'pyenv': a utility for downloading and switching between multiple
   # Python interpreters on the same system.
