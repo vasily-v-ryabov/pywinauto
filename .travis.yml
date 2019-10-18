@@ -8,19 +8,19 @@ language: cpp
 matrix:
   include:
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode9.2
       env: PYVER=2.7
       language: generic
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode9.2
       env: PYVER=3.4
       language: generic
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode9.2
       env: PYVER=3.5
       language: generic
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode9.2
       env: PYVER=3.6
       language: generic
     - os: linux
@@ -65,7 +65,7 @@ install:
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python -m pip install pip==9.0.3; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python -m pip install six; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then pip install codecov coverage pyobjc; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew upgrade gcc@4.9; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew upgrade; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install qt; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew link qt --force; fi
 
