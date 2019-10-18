@@ -49,10 +49,10 @@ jobs:
         cd ../../../
     - name: Test with GUI
       run: |
-        coverage run -a --include=pywinauto/mouse.py pywinauto/unittests/test_mouse.py
-        coverage run -a --include=pywinauto/macos/keyboard_helper.py pywinauto/unittests/test_keyboard.py
         coverage run -a --source=pywinauto/macos pywinauto/unittests/test_application_macos.py
         coverage run -a --source=pywinauto/macos pywinauto/unittests/test_ax_element_info_macos.py
+        coverage run -a --include=pywinauto/mouse.py pywinauto/unittests/test_mouse.py
+        coverage run -a --include=pywinauto/macos/keyboard_helper.py pywinauto/unittests/test_keyboard.py
     - name: Submit Code Coverage
       run: |
         codecov
