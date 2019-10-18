@@ -45,7 +45,6 @@ before_install:
 install:
 
   # macOS dev dependencies:
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT INTO access VALUES ('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,1,1,NULL,NULL);"; fi
 
   # Install 'pyenv': a utility for downloading and switching between multiple
@@ -66,7 +65,7 @@ install:
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python -m pip install pip==9.0.3; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python -m pip install six; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then pip install codecov coverage pyobjc; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew upgrade; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew upgrade gcc@4.9; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install qt; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew link qt --force; fi
 
