@@ -24,7 +24,6 @@ jobs:
         pip install codecov coverage pyobjc==5.2 python-xlib
         brew install qt
         brew link qt --force
-        sudo sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT INTO access VALUES ('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,1,1,NULL,NULL);"
     - name: Clone test apps
       run: |
         git init apps
