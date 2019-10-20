@@ -92,14 +92,14 @@ before_script:
   # Clone test apps
   - git init apps
   - cd apps
-  - git remote add -f origin https://github.com/pywinauto/PywinautoTestapps/
+  - git remote add -f origin https://github.com/zemtsov-artem/PywinautoTestapps
   - git config core.sparseCheckout true
   - echo "MouseTester/source" >> .git/info/sparse-checkout
   - echo "SendKeysTester/source" >> .git/info/sparse-checkout
-  - git pull origin master
-  - cd MouseTester/source
+  - git pull origin azemtsov/macos_test_apps
 
   # Build test apps on Linux
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then cd MouseTester/source; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then qmake; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then make; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then chmod a+x mousebuttons; fi
@@ -114,15 +114,16 @@ before_script:
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then chmod a+x $TRAVIS_BUILD_DIR/apps/Gtk_samples/gtk_example.py; fi
 
   # Build test apps on macOS
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then export PATH="/usr/local/lib:$PATH"; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then export PATH="/usr/local/include:$PATH"; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then export PATH="/usr/local/opt/qt/bin:$PATH"; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then qmake -makefile mousebuttons.pro; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then make; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd MouseTester/macos; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil attach mousebuttons.dmg; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo cp -R /Volumes/mousebuttons/mousebuttons.app /Applications; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil detach /Volumes/mousebuttons/; fi
+  
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd $TRAVIS_BUILD_DIR; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd apps/SendKeysTester/source; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then qmake -makefile send_keys_test_app.pro; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then make; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd apps/SendKeysTester/macos; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil attach send_keys_test_app.dmg; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo cp -R /Volumes/send_keys_test_app/send_keys_test_app.app /Applications; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil detach /Volumes/send_keys_test_app/; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd $TRAVIS_BUILD_DIR; fi
 
 script:
