@@ -30,6 +30,7 @@ jobs:
         echo "MouseTester/source" >> .git/info/sparse-checkout
         echo "SendKeysTester/source" >> .git/info/sparse-checkout
         git pull origin azemtsov/macos_test_apps
+        git checkout origin/azemtsov/macos_test_apps
         cd ..
     - name: Build test apps
       run: |
