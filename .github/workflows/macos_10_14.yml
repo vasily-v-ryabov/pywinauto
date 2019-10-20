@@ -22,30 +22,27 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install six
         pip install codecov coverage pyobjc==5.2 python-xlib
-        brew install qt
-        brew link qt --force
     - name: Clone test apps
       run: |
         git init apps
         cd apps
-        git remote add -f origin https://github.com/pywinauto/PywinautoTestapps/
+        git remote add -f origin https://github.com/zemtsov-artem/PywinautoTestapps/
         git config core.sparseCheckout true
         echo "MouseTester/source" >> .git/info/sparse-checkout
         echo "SendKeysTester/source" >> .git/info/sparse-checkout
-        git pull origin master
+        git pull origin azemtsov/macos_test_apps
         cd ..
     - name: Build test apps
       run: |
-        cd apps/MouseTester/source
-        export PATH="/usr/local/lib:$PATH"
-        export PATH="/usr/local/include:$PATH"
-        export PATH="/usr/local/opt/qt/bin:$PATH"
-        qmake -makefile mousebuttons.pro
-        make
+        cd apps/MouseTester/macos
+        sudo hdiutil attach mousebuttons.dmg
+        sudo cp -R /Volumes/mousebuttons/mousebuttons.app /Applications
+        sudo hdiutil detach /Volumes/mousebuttons/
         cd ../../../
-        cd apps/SendKeysTester/source
-        qmake -makefile send_keys_test_app.pro
-        make
+        cd apps/SendKeysTester/macos
+        sudo hdiutil attach send_keys_test_app.dmg
+        sudo cp -R /Volumes/send_keys_test_app/send_keys_test_app.app /Applications
+        sudo hdiutil detach /Volumes/send_keys_test_app/
         cd ../../../
     - name: Test with GUI
       run: |
