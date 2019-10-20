@@ -112,9 +112,12 @@ class Application(BaseApplication):
             ax_element_info.cache_update()
             nom = self.ns_app.localizedName()
             elem = ax_element_info.AxElementInfo()
+            print('app_idle()')
             for app in elem.children():
+                print('app = "{}", app.name = "{}"'.format(app, app.name))
                 if app.name == nom:
                     return True
+            print('app_idle() returned False')
             return False
 
         wait_until(Timings.app_start_timeout, Timings.app_start_retry, app_idle, value=True)
