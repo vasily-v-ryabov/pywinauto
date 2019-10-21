@@ -8,27 +8,24 @@ language: cpp
 matrix:
   include:
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode8
       env: PYVER=2.7
       language: generic
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode8
       env: PYVER=3.4
       language: generic
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode8
       env: PYVER=3.5
       language: generic
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode8
       env: PYVER=3.6
       language: generic
     - os: linux
       language: python
       python: 2.7
-    # - os: linux
-    #   language: python
-    #   python: 3.3
     - os: linux
       language: python
       python: 3.4
@@ -65,9 +62,6 @@ install:
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python -m pip install pip==9.0.3; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python -m pip install six; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then pip install codecov coverage pyobjc; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew upgrade; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install qt; fi
-  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew link qt --force; fi
 
 
   # Linux dev dependencies:
@@ -94,8 +88,10 @@ before_script:
   - cd apps
   - git remote add -f origin https://github.com/zemtsov-artem/PywinautoTestapps
   - git config core.sparseCheckout true
-  - echo "MouseTester/source" >> .git/info/sparse-checkout
-  - echo "SendKeysTester/source" >> .git/info/sparse-checkout
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then echo "MouseTester/macos" >> .git/info/sparse-checkout; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then echo "SendKeysTester/macos" >> .git/info/sparse-checkout; fi
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then echo "MouseTester/source" >> .git/info/sparse-checkout; fi
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then echo "SendKeysTester/source" >> .git/info/sparse-checkout; fi
   - git pull origin azemtsov/macos_test_apps
   - git checkout origin/azemtsov/macos_test_apps
 
