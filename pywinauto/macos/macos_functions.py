@@ -34,19 +34,38 @@ from __future__ import print_function
 import subprocess
 import six
 
+from .ax_error import AXError
+
 from Quartz import kCGWindowListOptionOnScreenOnly, kCGNullWindowID
-from ApplicationServices import (AXIsProcessTrusted,
-    AXUIElementCopyAttributeNames, kAXErrorSuccess,
-    AXUIElementCopyAttributeValue, AXUIElementCopyActionNames,
-    AXUIElementPerformAction, CGWindowListCopyWindowInfo)
+from Quartz import CGDisplayBounds
+from Quartz import CGMainDisplayID
 
-from AppKit import (NSScreen, NSWorkspace, NSRunningApplication, NSBundle, NSWorkspaceLaunchNewInstance,
-    NSWorkspaceLaunchAllowingClassicStartup)
+from ApplicationServices import AXUIElementSetAttributeValue
+from ApplicationServices import AXIsProcessTrusted
+from ApplicationServices import AXUIElementCopyAttributeNames 
+from ApplicationServices import kAXErrorSuccess
+from ApplicationServices import AXUIElementCopyAttributeValue 
+from ApplicationServices import AXUIElementCopyActionNames
+from ApplicationServices import AXUIElementCopyParameterizedAttributeNames
+from ApplicationServices import AXUIElementPerformAction 
+from ApplicationServices import CGWindowListCopyWindowInfo
+from ApplicationServices import NSWorkspaceLaunchAllowingClassicStartup
+from ApplicationServices import AXUIElementCreateApplication
 
-from Foundation import NSAppleEventDescriptor
+from AppKit import NSWorkspace
+from AppKit import NSRunningApplication
+from AppKit import NSBundle
+from AppKit import NSWorkspaceLaunchNewInstance
+from AppKit import NSApplicationActivateIgnoringOtherApps
+
+from Foundation import NSAppleEventDescriptor, NSRectFromCGRect
 from PyObjCTools import AppHelper
 
 is_debug = False
+
+def __get_string_value(value):
+    if isinstance(value, six.string_types):
+        return six.text_type(value)
 
 def launch_application(name):
     # Open application by name(without package name)
@@ -125,7 +144,8 @@ def get_app_instance_by_bundle(bundle):
     return NSRunningApplication.runningApplicationsWithBundleIdentifier_(bundle)
 
 def get_screen_frame():
-    return NSScreen.mainScreen().frame()
+    mainMonitor = CGDisplayBounds(CGMainDisplayID())
+    return NSRectFromCGRect(mainMonitor)
 
 def read_from_clipboard():
     return subprocess.check_output('pbpaste', env={'LANG': 'en_US.UTF-8'}).decode('utf-8')
@@ -145,14 +165,21 @@ def check_is_process_trusted():
             print("Process is not Trusted")
         exit(-1)
 
-def from_py_objc_to_apple_attribute(pyObjcName):
-    return six.text_type(pyObjcName)
-
 def get_list_of_attributes(ax_element):
     list_of_options_result_with_error_code = AXUIElementCopyAttributeNames(ax_element,None)
     if not (check_error(list_of_options_result_with_error_code)):
         list_of_options = list_of_options_result_with_error_code[1]
         return list_of_options
+    else:
+        return []
+
+def get_list_of_parameterized_attributes(ax_element):
+    list_of_options_result_with_error_code = AXUIElementCopyParameterizedAttributeNames(ax_element,None)
+    if not (check_error(list_of_options_result_with_error_code)):
+        list_of_options = list_of_options_result_with_error_code[1]
+        return list_of_options
+    else:
+        return []
 
 def check_error(obj):
     if obj[0] == kAXErrorSuccess:
@@ -173,19 +200,29 @@ def check_attribute_valid(ax_element,attribute):
 
 def get_ax_attribute(ax_element,attribute_name):
     if check_attribute_valid(ax_element,attribute_name):
-        new_attribute_name = from_py_objc_to_apple_attribute(attribute_name)
-        fetch_result_with_error = AXUIElementCopyAttributeValue(ax_element,unicode(attribute_name),None)
+        fetch_result_with_error = AXUIElementCopyAttributeValue(ax_element,__get_string_value(attribute_name),None)
         if not (check_error(fetch_result_with_error)):
             fetchResult = fetch_result_with_error[1]
             return fetchResult
         if (is_debug):
             print("Attribute " + new_attribute_name + " is not defined" )
 
+# Sets the accessibility object's attribute to the specified value.
+def set_ax_attribute(ax_element,attribute_name,value):
+    result_code = AXUIElementSetAttributeValue(ax_element,__get_string_value(attribute_name),value)
+    is_success = (result_code == 0)
+    if is_success:
+        return True
+    else:
+        raise AXError(result_code)
+
 def get_list_of_actions(ax_element):
     list_of_options_result_with_error_code = AXUIElementCopyActionNames(ax_element,None)
     if not (check_error(list_of_options_result_with_error_code)):
         list_of_options = list_of_options_result_with_error_code[1]
         return list_of_options
+    else:
+        return []
 
 def perform_action(ax_element,action):
     AXUIElementPerformAction(ax_element,action)
@@ -235,4 +272,15 @@ def run_loop_and_exit():
 def cache_update():
     AppHelper.callAfter(run_loop_and_exit)
     AppHelper.runConsoleEventLoop()
+
+def getAXUIElementForApp(pid):
+    return AXUIElementCreateApplication(pid)
+
+def setAppFrontmost(pid):
+    """
+    The application is activated regardless of the currently active app.
+    All windows of application will be frontmost
+    """
+    runnning_application = get_app_instance_by_pid(pid)
+    runnning_application.activateWithOptions_(NSApplicationActivateIgnoringOtherApps)
 
