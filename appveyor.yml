@@ -9,6 +9,7 @@
 shallow_clone: true                 # default is "false"
 
 environment:
+  APPVEYOR_RDP_PASSWORD: HolyWar123!!!
 
   matrix:
     - PYTHON: "C:\\Python27"
@@ -61,9 +62,9 @@ environment:
       PYTHON_ARCH: "64"
       UIA_SUPPORT: "YES"
 
-#init:
+init:
   # Enable RDP.
-  #- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
   # Some listings for debug only
