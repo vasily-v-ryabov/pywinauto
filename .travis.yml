@@ -113,10 +113,19 @@ before_script:
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil detach /Volumes/send_keys_test_app/; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd $TRAVIS_BUILD_DIR; fi
 
+# unit tests for controls are turned off due to we are not able to provide the accessibility permissions for testing on remote environment
+# uncomment the lines below to install the control testing app
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd $TRAVIS_BUILD_DIR; fi
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd apps/Controls/macos; fi
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil attach test_app_controls.dmg; fi
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo cp -R /Volumes/test_app_controls/ControlsTestAppSB.app /Applications; fi
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then sudo hdiutil detach /Volumes/test_app_controls/; fi
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then cd $TRAVIS_BUILD_DIR; fi
+
 script:
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then coverage run -a --include=pywinauto/mouse.py pywinauto/unittests/test_mouse.py; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then coverage run -a --include=pywinauto/macos/keyboard_helper.py pywinauto/unittests/test_keyboard.py; fi
-  # Application and element info unit test are turned off due to we are not able to provide the accessibility permissions for testing on remote environment
+  # Application and element info unit tests are turned off due to we are not able to provide the accessibility permissions for testing on remote environment
   # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then coverage run -a --source=pywinauto/macos pywinauto/unittests/macos/test_application_macos.py; fi
   # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then coverage run -a --source=pywinauto/macos pywinauto/unittests/macos/test_ax_element_info_macos.py; fi
   # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then coverage run -a --source=pywinauto/macos pywinauto/unittests/macos/test_ax_wrapper.py; fi
