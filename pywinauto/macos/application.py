@@ -1,23 +1,19 @@
 import time
-# import os
-# import sys
+import os
+import sys
 import subprocess
 
 from AppKit import NSWorkspaceLaunchNewInstance, NSWorkspaceLaunchAllowingClassicStartup
 from Foundation import NSAppleEventDescriptor
-from ApplicationServices import AXUIElementCreateApplication
 
 from . import macos_functions
-from . import ax_element_info
-from .. import backend
+
+from .ax_element_info import AxElementInfo
+
 from ..backend import registry
 from ..element_info import ElementInfo
-from ..base_wrapper import BaseWrapper
 from ..base_application import AppStartError, ProcessNotFoundError, AppNotConnected, BaseApplication
-
 from ..timings import Timings, wait_until
-backend.register('ax', ElementInfo, BaseWrapper)
-
 
 def get_process_ids(cache_update=False):
     if cache_update:
@@ -27,22 +23,25 @@ def get_process_ids(cache_update=False):
 
 class Application(BaseApplication):
 
-    def __init__(self, backend="ax"):
+    def __init__(self, backend="ax", allow_magic_lookup=True):
         self.connected = False
         self.ns_app = None
         self.process = None
         if backend not in registry.backends:
             raise ValueError('Backend "{0}" is not registered!'.format(backend))
         self.backend = registry.backends[backend]
+        self.allow_magic_lookup = allow_magic_lookup
 
     def start(self, name=None, bundle_id=None, new_instance=True):
+        if name == None and bundle_id == None and new_instance == True:
+            raise AttributeError('Cannot start application without its name or bundle_id. Please use name=name_of_application or bundle_id=bundle_id_of_application.')
         self.process = None
         pids_before = get_process_ids(cache_update=False)
 
-        if name is not None and bundle_id is not None:
+        if name and bundle_id:
             raise ValueError('Parameters name and bundle_id are mutually exclusive. Use only one of them at the moment.')
 
-        if name is not None:
+        if name:
             bundle = macos_functions.bundle_identifier_for_application_name(name)
             if bundle is not None:
                 macos_functions.launch_application_by_bundle(bundle, new_instance)
@@ -69,34 +68,20 @@ class Application(BaseApplication):
                     NSAppleEventDescriptor.nullDescriptor(),
                     None)
             if not r[0]:
-                    raise AppStartError('Could not launch application by bundle id "{}". Error code: {}'.format(bundle_id, r))
+                    raise AppStartError('Could not launch application by bundle id "{}". Verify you use correct bundle_id of application. Verify the application with this bundle_id is installed. Error code: {}'.format(bundle_id, r))
 
             ns_app_array = macos_functions.get_app_instance_by_bundle(bundle_id)
             self.ns_app = ns_app_array[0]
 
         self.connected = True
-
-        def app_launched():
-            pids_after = get_process_ids(cache_update=True)
-            for element in pids_after:
-                if element not in pids_before:
-                    name_app = macos_functions.get_app_instance_by_pid(element)
-                    # print(name_app)
-                    if name == name_app.localizedName() or bundle_id == name_app.bundleIdentifier():
-                        self.process = element
-                        return True
-            return False
-
-        if new_instance:
-            wait_until(Timings.app_start_timeout, Timings.app_start_retry, app_launched, value=True)
-            self.ns_app = macos_functions.get_app_instance_by_pid(self.process)
+        self.process = self.ns_app.processIdentifier()
 
         def app_idle():
             macos_functions.cache_update()
-            nom = self.ns_app.localizedName()
-            elem = ax_element_info.AxElementInfo()
+            pid = self.ns_app.processIdentifier()
+            elem = AxElementInfo()
             for app in elem.children():
-                if app.name == nom:
+                if app.process_id == pid:
                     return True
             return False
 
@@ -115,6 +100,7 @@ class Application(BaseApplication):
             if app:
                 self.ns_app = app
                 self.connected = True
+                self.process = app.processIdentifier()
             else:
                 raise ProcessNotFoundError('pid = ' + str(self.process_id))
         elif 'name' in kwargs:
@@ -123,16 +109,17 @@ class Application(BaseApplication):
             if app:
                 self.ns_app = app
                 self.connected = True
+                self.process = app.processIdentifier()
             else:
                 raise ProcessNotFoundError('name = ' + str(kwargs['name']))
         elif 'bundle' in kwargs:
             # For os x you have to pass just app name
             app = macos_functions.get_app_instance_by_bundle(kwargs['bundle'])
             if app:
-                pid = app[0].processIdentifier()
                 self.ns_app = app[0]
                 self.connected = None
-                AXUIElementCreateApplication(pid)
+                self.process = self.ns_app.processIdentifier()
+                macos_functions.getAXUIElementForApp(self.process)
             else:
                 raise ProcessNotFoundError('bundle = ' + str(kwargs['bundle']))
         return self
@@ -219,6 +206,12 @@ class Application(BaseApplication):
             retry_interval = Timings.app_exit_retry
         wait_until(timeout, retry_interval, self.is_process_running, value=False)
 
+    def set_frontmost(self, value=True):
+        """
+        The application is activated regardless of the currently active app.
+        All windows of application will be frontmost
+        """
+        macos_functions.setAppFrontmost(self.process_id)
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -34,7 +34,8 @@
 import sys
 import os
 import unittest
-sys.path.append(".")
+#sys.path.append(".")
+sys.path.append("..")
 from pywinauto.windows.application import Application
 from pywinauto.sysinfo import is_x64_Python
 from pywinauto.controls.menuwrapper import MenuItemNotEnabled
@@ -42,7 +43,7 @@ from pywinauto.timings import Timings
 
 
 mfc_samples_folder = os.path.join(
-   os.path.dirname(__file__), r"..\..\apps\MFC_samples")
+   os.path.dirname(__file__), r"..\..\..\apps\MFC_samples")
 if is_x64_Python():
     mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
 

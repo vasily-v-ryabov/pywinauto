@@ -35,7 +35,8 @@ import unittest
 import sys
 import os
 
-sys.path.append(".")
+#sys.path.append(".")
+sys.path.append("..")
 from pywinauto import taskbar  # noqa: E402
 from pywinauto import findwindows  # noqa: E402
 from pywinauto.windows.application import Application  # noqa: E402
@@ -52,7 +53,7 @@ from pywinauto import Desktop  # noqa: E402
 
 #pywinauto.actionlogger.enable()
 mfc_samples_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\MFC_samples"
+    os.path.dirname(__file__), r"..\..\..\apps\MFC_samples"
 )
 if is_x64_Python():
     mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')

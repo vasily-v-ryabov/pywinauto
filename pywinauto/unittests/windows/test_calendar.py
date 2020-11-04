@@ -4,13 +4,14 @@ import os
 import sys
 import unittest
 
-sys.path.append(".")
+#sys.path.append(".")
+sys.path.append("..")
 from pywinauto.windows import win32defines, win32structures
 from pywinauto.windows.application import Application  # noqa E402
 from pywinauto.sysinfo import is_x64_Python  # noqa E402
 
 mfc_samples_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\MFC_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\MFC_samples")
 if is_x64_Python():
     mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
 

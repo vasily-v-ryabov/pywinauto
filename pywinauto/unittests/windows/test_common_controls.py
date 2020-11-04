@@ -42,7 +42,8 @@ import os
 import win32api
 import six
 
-sys.path.append(".")
+#sys.path.append(".")
+sys.path.append("..")
 from pywinauto.windows.application import Application  # noqa: E402
 from pywinauto.windows.win32structures import RECT  # noqa: E402
 from pywinauto.windows import win32defines
@@ -56,13 +57,13 @@ from pywinauto import mouse  # noqa: E402
 
 
 controlspy_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\controlspy0998")
+    os.path.dirname(__file__), r"..\..\..\apps\controlspy0998")
 controlspy_folder_32 = controlspy_folder
 mfc_samples_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\MFC_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\MFC_samples")
 mfc_samples_folder_32 = mfc_samples_folder
 winforms_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\WinForms_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\WinForms_samples")
 winforms_folder_32 = winforms_folder
 if is_x64_Python():
     controlspy_folder = os.path.join(controlspy_folder, 'x64')

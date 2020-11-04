@@ -47,7 +47,8 @@ import ctypes
 import mock
 import six
 
-sys.path.append(".")
+#sys.path.append(".")
+sys.path.append("..")
 from pywinauto import Desktop
 from pywinauto.windows import application, win32defines
 from pywinauto.controls import hwndwrapper
@@ -84,7 +85,7 @@ def _notepad_exe():
         return r"C:\Windows\SysWOW64\notepad.exe"
 
 mfc_samples_folder_32 = mfc_samples_folder = os.path.join(
-   os.path.dirname(__file__), r"..\..\apps\MFC_samples")
+   os.path.dirname(__file__), r"..\..\..\apps\MFC_samples")
 if is_x64_Python():
     mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
 
@@ -293,8 +294,11 @@ class ApplicationTestCases(unittest.TestCase):
         app = Application()
         app.start(_notepad_exe())
         with self.assertRaises(NotImplementedError):
-            for a in app:
-                pass
+            for i, a in enumerate(app):
+                if i > 2:
+                    app.kill()
+                    self.fail('Application object appears to be iterable unexpectedly!')
+                    break
         app.kill()
 
     def test_not_connected(self):

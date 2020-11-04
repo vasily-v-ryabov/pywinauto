@@ -28,32 +28,17 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""Controls package"""
 
+"""Run some automations to test things"""
+from __future__ import unicode_literals
+from __future__ import print_function
 import sys
+sys.path.append('/Users/daria/pywinauto')
 
-if sys.platform.startswith('linux'):
-    from . import atspiwrapper  # register "atspi" back-end
-    from . import atspi_controls
-    from .atspiwrapper import InvalidWindowHandle
-elif sys.platform == 'win32':
-    from ..sysinfo import UIA_support
-    if UIA_support:
-        from . import uiawrapper # register "uia" back-end (at the end of uiawrapper module)
-        from . import uia_controls
+from pywinauto import application
+from pywinauto import macos 
 
-    from .hwndwrapper import get_dialog_props_from_handle
-    from .hwndwrapper import InvalidWindowHandle
+app = application.Application()
+app.start('TextEdit')
+app.kill()
 
-    # import the control classes - this will register the classes they
-    # contain
-    from . import common_controls
-    from . import win32_controls
-elif sys.platform == "darwin":
-    from . import ax_wrapper # register "ax" back-end
-    from . import ax_controls
-    from .ax_wrapper import InvalidWindowHandle
-else:
-    raise NotImplementedError('Platform "{}" is not supported'.format(sys.platform))
-
-from ..base_wrapper import InvalidElement
