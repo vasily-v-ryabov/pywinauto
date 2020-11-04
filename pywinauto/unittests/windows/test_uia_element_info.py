@@ -14,7 +14,7 @@ if UIA_support:
     from pywinauto.windows.uia_element_info import UIAElementInfo
 
 mfc_samples_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\WPF_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\WPF_samples")
 if is_x64_Python():
     mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
 wpf_app_1 = os.path.join(mfc_samples_folder, u"WpfApplication1.exe")

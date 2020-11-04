@@ -26,19 +26,19 @@ if UIA_support:
     from pywinauto.controls.uiawrapper import UIAWrapper
 
 wpf_samples_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\WPF_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\WPF_samples")
 if is_x64_Python():
     wpf_samples_folder = os.path.join(wpf_samples_folder, 'x64')
 wpf_app_1 = os.path.join(wpf_samples_folder, u"WpfApplication1.exe")
 
 mfc_samples_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\MFC_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\MFC_samples")
 if is_x64_Python():
     mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
 mfc_app_rebar_test = os.path.join(mfc_samples_folder, u"RebarTest.exe")
 
 winforms_folder = os.path.join(
-    os.path.dirname(__file__), r"..\..\apps\WinForms_samples")
+    os.path.dirname(__file__), r"..\..\..\apps\WinForms_samples")
 if is_x64_Python():
     winforms_folder = os.path.join(winforms_folder, 'x64')
 winfoms_app_grid = os.path.join(winforms_folder, u"DataGridView_TestApp.exe")
