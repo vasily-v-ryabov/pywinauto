@@ -68,8 +68,7 @@ if UIA_support:
 
         def test_issue_760_uia(self):
             focused_element = self.dlg.get_active()
-            if not isinstance(focused_element, UIAWrapper):
-                raise Exception("Received object is not an instance of UIAWrapper")
+            self.assertEqual(type(focused_element), UIAWrapper)
 
         def tearDown(self):
             """Close the application after tests"""
@@ -357,6 +356,10 @@ if UIA_support:
             edit = self.dlg.TestLabelEdit.wrapper_object()
             edit.set_focus()
             self.assertEqual(edit.has_keyboard_focus(), True)
+
+        def test_issue_760_desktop_uia(self):
+            focused_element = Desktop(backend="uia").get_active()
+            self.assertEqual(type(focused_element), UIAWrapper)
 
         def test_type_keys(self):
             """Test sending key types to a control"""
