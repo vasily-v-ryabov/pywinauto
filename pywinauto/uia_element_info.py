@@ -73,7 +73,7 @@ class UIAElementInfo(ElementInfo):
                 self._element = handle_or_elem
             else:
                 raise TypeError("UIAElementInfo object can be initialized " + \
-                                "with integer or IUIAutomationElement instance only!")
+                                "with integer or IUIAutomationElement instance only! Actual type: {}".format(type(handle_or_elem)))
         else:
             self._element = IUIA().root
 
