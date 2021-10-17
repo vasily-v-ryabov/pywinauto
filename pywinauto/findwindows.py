@@ -155,12 +155,19 @@ def find_elements(**kwargs):
             renamed_prop = backend_obj.element_info_class.renamed_props.get(key, None)
             if renamed_prop is not None:
                 new_key, values_map = renamed_prop
+                if kwargs.has_key(new_key):
+                    raise RenamedKeywordError('New keyword "{}" has a conflict with deprecated keyword "{}".' \
+                        ' Use one of them!'.format(new_key, key))
                 if values_map and value in values_map.keys():
                     renamed_erros.append('"{}={}" -> "{}={}"'.format(key, value, new_key, values_map[value]))
+                    kwargs[new_key] = values_map[value]
                 else:
                     renamed_erros.append('"{}" -> "{}"'.format(key, new_key))
+                    kwargs[new_key] = value
+                del kwargs[key]
         if renamed_erros:
-            raise RenamedKeywordError('[pywinauto>=0.7.0] Some search keywords are renamed: ' + ', '.join(renamed_erros))
+            warnings.warn('[pywinauto>=0.7.0] Some search keywords are renamed: ' + ', '.join(renamed_erros), DeprecationWarning)
+            #raise RenamedKeywordError('[pywinauto>=0.7.0] Some search keywords are renamed: ' + ', '.join(renamed_erros))
 
     re_props = backend_obj.element_info_class.re_props
     exact_only_props = backend_obj.element_info_class.exact_only_props
