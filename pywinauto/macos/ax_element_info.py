@@ -47,6 +47,7 @@ from AppKit import NSRangeFromString
 from .macos_functions import check_attribute_valid
 from .macos_functions import get_list_of_attributes
 from .macos_functions import get_screen_frame
+from .macos_functions import get_list_of_actions
 from .macos_functions import getAXUIElementForApp
 
 from .macos_defines import ax_attributes
@@ -187,6 +188,12 @@ class AxElementInfo(ElementInfo):
         """
         return self._get_ax_attribute_value(ax_attributes['Minimized'])
 
+    def _is_maximized(self):
+        """
+        Get the value of the the specified ax attribute
+        Should be called for Windows only
+        """
+        return self._get_ax_attribute_value(ax_attributes['Maximized'])
 
     def _is_hidden(self):
         """
@@ -508,4 +515,42 @@ class AxElementInfo(ElementInfo):
         # TODO: Discuss, is it a good idea to use hash as a control id?
         return -1
 
+    @property
+    def title(self):
+        try:
+            return self._get_ax_attribute_value(ax_attributes["Title"])
+        except AXError:
+            return ""
 
+    @property
+    def role_description(self):
+        try:
+            return self._get_ax_attribute_value(ax_attributes["RoleDescription"])
+        except AXError:
+            return ""
+
+    @property
+    def identifier(self):
+        try:
+            return self._get_ax_attribute_value("AXIdentifier")
+        except AXError:
+            return ""
+
+    @property
+    # return class name, identifier and description of top level ui element
+    def top_level_ui_element(self):
+        try:
+            return self._get_ax_attribute_value(ax_attributes["TopLevelUIElement"])
+        except AXError:
+            return ""
+
+    @property
+    # return some help info about element
+    def help(self):
+        try:
+            return self._get_ax_attribute_value(ax_attributes["Help"])
+        except AXError:
+            return ""
+
+    def get_avaliable_actions(self):
+        return get_list_of_attributes(self)
