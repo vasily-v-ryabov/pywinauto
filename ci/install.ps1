@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/test_typeinfo_quits_using_shdocvw_and_ieframe_dll.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/split_constants_module.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
