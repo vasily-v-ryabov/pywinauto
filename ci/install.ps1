@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/remove_windows_ce_workaround_from_test_typeinfo.zip"
+    $args = "install https://github.com/vasily-v-ryabov/comtypes/archive/refs/heads/mworion_fix_205.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
