@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/restore_and_simplify_test_showevents.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/Generator_externals_attribute_is_no_more.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
