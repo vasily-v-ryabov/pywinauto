@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/enable_GetModule_take_one_length_sequence_containing_libid.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/restore_and_simplify_test_showevents.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
