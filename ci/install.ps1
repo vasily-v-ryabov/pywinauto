@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/rename_readme_to_md.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/no_more_patching_or_modifying_typedesc_name_attribute_in_codegenerator.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
