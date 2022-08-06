@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/update_test_word.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/remove_from_sets_import_Set.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
