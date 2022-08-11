@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/enthought/comtypes/archive/refs/heads/master.zip"
+    $args = "install https://github.com/bennyrowland/comtypes/archive/refs/heads/333_optin_numpy.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
