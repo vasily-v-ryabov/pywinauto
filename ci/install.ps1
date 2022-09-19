@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/make_loose_coupling_and_high_cohesion_between_generate_and_codegenerator.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/fix_Array_import_src.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
