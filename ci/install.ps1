@@ -86,7 +86,7 @@ function UpdateConda ($python_home) {
 
 function InstallComtypes ($python_home) {
     $pip_path = $python_home + "\Scripts\pip.exe"
-    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/fix_docstring_from_DispInterfaceHead.zip"
+    $args = "install https://github.com/junkmd/comtypes/archive/refs/heads/add_memberspecs.zip"
     Start-Process -FilePath "$pip_path" -ArgumentList $args -Wait -Passthru
 }
 
