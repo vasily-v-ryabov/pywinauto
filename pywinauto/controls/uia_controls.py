@@ -35,12 +35,16 @@ import time
 import comtypes
 import six
 
-from pywinauto.windows import uia_element_info
-from .. import findbestmatch
-from .. import timings
+from pywinauto import findbestmatch
+from pywinauto import timings
 
-from .. import uia_defines as uia_defs
-from . import uiawrapper
+from pywinauto.controls import uiawrapper
+from pywinauto.controls import win32_controls
+from pywinauto.controls import common_controls
+
+from pywinauto.windows import uia_element_info
+from pywinauto.windows import uia_defines as uia_defs
+
 from pywinauto.windows.uia_defines import IUIA
 from pywinauto.windows.uia_defines import NoPatternInterfaceError
 from pywinauto.windows.uia_defines import toggle_state_on

@@ -37,9 +37,11 @@ function run {
     if ($env:PYTHON_VERSION -match "2.7" -or $env:PYTHON_VERSION -match "3.5" -or $env:PYTHON_VERSION -match "3.6") {
         $faulthandler_opt = ""
     }
+    Write-Output "Current work dir: $env:CD"
 
     $results = "results.xml"
-    pytest --junit-xml=$results --tb=native --capture=sys --show-capture=no $faulthandler_opt -v --verbosity=3 --cache-clear --durations=15 --ignore=testall.py --log-level=DEBUG --cov-report html:Coverage_report --cov=pywinauto pywinauto\unittests
+    $ignored = "--ignore=test_application_linux.py --ignore=testall.py --ignore-glob=test_*atspi*.py"
+    pytest --junit-xml=$results --tb=native --capture=sys --show-capture=no $faulthandler_opt -v --verbosity=3 --cache-clear --durations=15 $ignored --log-level=DEBUG --cov-report html:Coverage_report --cov=pywinauto pywinauto\unittests
     $success = $?
     Write-Output "result code of pytest: $success"
 
